@@ -1,0 +1,13 @@
+[package]
+name = "scsp_core"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+# Optional QUIC support
+quic = ["quinn"]
+
+[dependencies]
+bytes = "1.11.1"
+tokio = { version = "1", features = ["full"] }
+quinn = { version = "0.11.9", optional = true }

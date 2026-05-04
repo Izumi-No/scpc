@@ -1,53 +1,6 @@
-[package]
-name = "scsp"
-version = "0.1.0"
-edition = "2024"
-license = "Proprietary"
-authors = ["Izumi <kevynmiguel@gmail.com>"]
-categories = ["network-programming", "async", "rust"]
-description = "A Rust implementation of the Scalable Concurrent State Machine Protocol (SCSP) for high-performance distributed systems."
-keywords = ["scsp", "state machine", "distributed systems", "network programming", "async", "rust"]
+[workspace]
+resolver = "3"
+members = ["core", "server", "client", "benchmarks"]
 
 [profile.release]
 debug = true
-
-[dependencies]
-anyhow = "1.0.102"
-bytes = "1.11.1"
-kanal = "0.1.1"
-quinn = "0.11.9"
-slab = "0.4.12"
-smallvec = "1.15.1"
-thiserror = "2.0.18"
-tokio = { version = "1.52.1", features = ["full"] }
-crossbeam-queue = "0.3.11"
-
-[[bench]]
-name = "timer"
-harness = false
-
-[[bench]]
-name = "frame"
-harness = false
-
-[[bench]]
-name = "dhat_profile"
-harness = false
-
-[[bench]]
-name = "stress_ramp"
-harness = false
-
-[[bench]]
-name = "shard_simulated"
-harness = false
-
-[dev-dependencies]
-criterion = "0.5"
-dhat = "0.3.3"
-
-[lints.clippy]
-all = "warn"
-pedantic = "warn"
-nursery = "warn"
-cargo = "warn"

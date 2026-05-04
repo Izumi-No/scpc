@@ -1,8 +1,8 @@
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
-use scsp::frame::{FrameHeader, FrameType, encode_header, parse_frame};
-use scsp::timer::TimerWheel;
+use scsp_core::frame::{FrameHeader, FrameType, encode_header, parse_frame};
+use scsp_core::timer::TimerWheel;
 
 fn main() {
     let _profiler = dhat::Profiler::builder().testing().build();

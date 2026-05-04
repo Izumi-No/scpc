@@ -66,6 +66,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "benchmarks"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "dhat",
+ "scsp_core",
+ "scsp_server",
+ "tokio",
+]
+
+[[package]]
 name = "bitflags"
 version = "2.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -475,16 +486,6 @@ dependencies = [
  "futures-util",
  "once_cell",
  "wasm-bindgen",
-]
-
-[[package]]
-name = "kanal"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9e3953adf0cd667798b396c2fa13552d6d9b3269d7dd1154c4c416442d1ff574"
-dependencies = [
- "futures-core",
- "lock_api",
 ]
 
 [[package]]
@@ -965,19 +966,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "94143f37725109f92c262ed2cf5e59bce7498c01bcc1502d7b9afe439a4e9f49"
 
 [[package]]
-name = "scsp"
+name = "scsp_client"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "bytes",
- "criterion",
- "crossbeam-queue",
- "dhat",
- "kanal",
  "quinn",
+ "scsp_core",
+ "tokio",
+]
+
+[[package]]
+name = "scsp_core"
+version = "0.1.0"
+dependencies = [
+ "bytes",
+ "quinn",
+ "tokio",
+]
+
+[[package]]
+name = "scsp_server"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "crossbeam-queue",
+ "quinn",
+ "scsp_core",
  "slab",
  "smallvec",
- "thiserror 2.0.18",
  "tokio",
 ]
 

@@ -1,7 +1,6 @@
-use scsp::connection::Connection;
-use scsp::frame::{FrameHeader, FrameType, encode_header};
-use scsp::shard::Shard;
-use scsp::transport::Transport;
+use scsp_core::frame::{FrameHeader, FrameType, encode_header};
+use scsp_server::connection::Connection;
+use scsp_server::shard::Shard;
 use std::sync::Arc;
 use std::time::Instant;
 

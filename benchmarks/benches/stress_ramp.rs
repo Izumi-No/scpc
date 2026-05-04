@@ -1,7 +1,7 @@
 #[global_allocator]
 static ALLOC: dhat::Alloc = dhat::Alloc;
 
-use scsp::timer::TimerWheel;
+use scsp_core::timer::TimerWheel;
 use std::time::{Duration, Instant};
 
 struct VirtualConn {

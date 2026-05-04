@@ -1,0 +1,33 @@
+[package]
+name = "benchmarks"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+scsp_core = { path = "../core" }
+scsp_server = { path = "../server" }
+tokio = { version = "1.52.1", features = ["full"] }
+
+[dev-dependencies]
+criterion = "0.5"
+dhat = "0.3.3"
+
+[[bench]]
+name = "frame"
+harness = false
+
+[[bench]]
+name = "timer"
+harness = false
+
+[[bench]]
+name = "shard_simulated"
+harness = false
+
+[[bench]]
+name = "stress_ramp"
+harness = false
+
+[[bench]]
+name = "dhat_profile"
+harness = false

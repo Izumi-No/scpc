@@ -1,6 +1,6 @@
 use criterion::{BenchmarkId, Criterion, black_box, criterion_group, criterion_main};
 
-use scsp::timer::TimerWheel;
+use scsp_core::timer::TimerWheel;
 
 fn timer_wheel_bench(c: &mut Criterion) {
     let mut group = c.benchmark_group("TimerWheel");

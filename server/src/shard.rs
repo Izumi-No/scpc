@@ -3,8 +3,8 @@ use slab::Slab;
 use tokio::time::Instant;
 
 use crate::connection::Connection;
-use crate::frame::{FrameHeader, FrameType, QosLevel, parse_frame};
-use crate::timer::TimerWheel;
+use scsp_core::frame::{FrameHeader, FrameType, QosLevel, parse_frame};
+use scsp_core::timer::TimerWheel;
 
 pub enum ShardMessage {
     //quit, broadcast, etc. can be added here
@@ -167,7 +167,7 @@ impl Shard {
         for (id, header, payload) in responses {
             if let Some(conn) = self.conns.get_mut(id) {
                 let mut header_buf = [0u8; 16];
-                crate::frame::encode_header(&header, &mut header_buf);
+                scsp_core::frame::encode_header(&header, &mut header_buf);
                 conn.queue_send(&header_buf);
                 conn.queue_send(&payload);
             }

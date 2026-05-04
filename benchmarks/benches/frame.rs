@@ -1,5 +1,5 @@
 use criterion::{Criterion, black_box, criterion_group, criterion_main};
-use scsp::frame::{FrameHeader, FrameType, encode_header, parse_frame};
+use scsp_core::frame::{FrameHeader, FrameType, encode_header, parse_frame};
 
 fn frame_bench(c: &mut Criterion) {
     let mut group = c.benchmark_group("Frame Processing");

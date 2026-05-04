@@ -1,0 +1,14 @@
+[package]
+name = "scsp_client"
+version = "0.1.0"
+edition = "2024"
+
+[features]
+default = []
+quic = ["quinn"]
+
+[dependencies]
+scsp_core = { path = "../core" }
+tokio = { version = "1.52.1", features = ["full", "net", "io-util"] }
+anyhow = "1.0.102"
+quinn = { version = "0.11.9", optional = true }

@@ -1,15 +1,18 @@
 use crate::frame::{FrameHeader, encode_header};
-use std::collections::VecDeque;
 use std::sync::Arc;
+
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+
+#[cfg(feature = "quic")]
+use quinn::NewConnection;
 
 /// A tiny in-memory transport used for simulation and testing.
 /// It returns the same pre-built frame on every call to `receive_frame` if `repeat` is true.
-struct MockTransport {
-    frame: Arc<Vec<u8>>,
-    offset: usize,
-    repeat: bool,
-    // store sent frames for inspection (not used in benchmarks but helpful for tests)
+pub struct MockTransport {
+    pub frame: Arc<Vec<u8>>,
+    pub offset: usize,
+    pub repeat: bool,
+    // store sent frames for inspection
     pub sent: Vec<Vec<u8>>,
 }
 
@@ -24,8 +27,10 @@ impl MockTransport {
     }
 }
 
+/// Transport abstraction shared between client and server.
 pub enum Transport {
     Tcp(tokio::net::TcpStream),
+    #[cfg(feature = "quic")]
     Quic(quinn::SendStream, quinn::RecvStream),
     Mock(MockTransport),
 }
@@ -51,11 +56,11 @@ impl Transport {
             Self::Tcp(stream) => {
                 stream.write_all(&frame).await?;
             }
+            #[cfg(feature = "quic")]
             Self::Quic(send, _) => {
                 send.write_all(&frame).await?;
             }
             Self::Mock(mock) => {
-                // record the sent frame; no async IO needed
                 mock.sent.push(frame);
             }
         }
@@ -71,17 +76,15 @@ impl Transport {
                 let n = stream.read(buf).await?;
                 Ok(n)
             }
+            #[cfg(feature = "quic")]
             Self::Quic(_, recv) => {
                 let n = recv.read(buf).await?.unwrap_or(0);
                 Ok(n)
             }
             Self::Mock(mock) => {
-                // Ensure there is data to read
                 if mock.frame.is_empty() {
-                    // no data -> simulate closed connection
                     return Ok(0);
                 }
-                // copy as much as fits from the current frame (respecting offset)
                 let remaining = mock.frame.len().saturating_sub(mock.offset);
                 if remaining == 0 {
                     if mock.repeat {
@@ -105,5 +108,28 @@ impl Transport {
                 Ok(to_copy)
             }
         }
+    }
+
+    pub async fn connect_tcp(addr: &str) -> Result<Self, Box<dyn std::error::Error>> {
+        let stream = tokio::net::TcpStream::connect(addr).await?;
+        Ok(Self::Tcp(stream))
+    }
+
+    #[cfg(feature = "quic")]
+    pub async fn connect_quic(
+        remote: &str,
+        server_name: &str,
+    ) -> Result<Self, Box<dyn std::error::Error>> {
+        // remote is "host:port"
+        let remote_addr: std::net::SocketAddr = remote.parse()?;
+        let local_addr: std::net::SocketAddr = "0.0.0.0:0".parse()?;
+
+        let mut endpoint = quinn::Endpoint::client(local_addr)?;
+        let client_cfg = quinn::ClientConfig::default();
+        endpoint.set_default_client_config(client_cfg);
+        let connecting = endpoint.connect(&remote_addr, server_name)?;
+        let NewConnection { connection, .. } = connecting.await?;
+        let (send, recv) = connection.open_bi().await?;
+        Ok(Self::Quic(send, recv))
     }
 }
