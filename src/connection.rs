@@ -1,6 +1,7 @@
 use crate::transport::Transport;
 use smallvec::SmallVec;
 use std::collections::HashMap;
+use std::sync::Arc;
 use tokio::time::Instant;
 
 #[derive(Debug, PartialEq, Eq)]
@@ -19,7 +20,7 @@ pub struct Connection {
     pub session_id: Option<u64>,
     pub last_activity: Instant,
 
-    pub read_buf: Box<[u8; 4096]>,
+    pub read_buf: Vec<u8>,
     pub read_len: usize,
     pub write_buf: SmallVec<[u8; 4096]>,
     pub unacked_sends: HashMap<u32, Instant>, // message_id -> timestamp
@@ -32,7 +33,24 @@ impl Connection {
             transport,
             session_id: None,
             last_activity: Instant::now(),
-            read_buf: Box::new([0u8; 4096]),
+            read_buf: vec![0u8; 4096],
+            write_buf: SmallVec::new(),
+            read_len: 0,
+            unacked_sends: HashMap::new(),
+        }
+    }
+
+    /// Create a simulated connection that uses a Mock transport and a smaller read buffer to
+    /// minimize heap usage during large-scale benchmarks. The provided `frame` is returned by the
+    /// transport on every `receive_frame` call when `repeat` is true.
+    pub fn simulated(frame: Arc<Vec<u8>>, buf_size: usize) -> Self {
+        let transport = Transport::mock(frame, true);
+        Self {
+            state: ConnectionState::Connecting,
+            transport,
+            session_id: None,
+            last_activity: Instant::now(),
+            read_buf: vec![0u8; buf_size],
             write_buf: SmallVec::new(),
             read_len: 0,
             unacked_sends: HashMap::new(),

@@ -34,6 +34,14 @@ harness = false
 name = "dhat_profile"
 harness = false
 
+[[bench]]
+name = "stress_ramp"
+harness = false
+
+[[bench]]
+name = "shard_simulated"
+harness = false
+
 [dev-dependencies]
 criterion = "0.5"
 dhat = "0.3.3"
